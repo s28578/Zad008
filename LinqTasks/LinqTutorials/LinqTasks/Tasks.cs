@@ -19,7 +19,7 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<Emp> Task1()
     {
-        return null;
+        return Emps.Where(emp => emp.Job == "Backend programmer");
     }
 
     /// <summary>
@@ -27,7 +27,7 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<Emp> Task2()
     {
-        return null;
+        return Emps.Where(emp => emp.Job == "Frontend programmer" && emp.Salary > 1000).OrderByDescending(emp => emp.Ename);
     }
 
 
@@ -36,7 +36,7 @@ public static partial class Tasks
     /// </summary>
     public static int Task3()
     {
-        return -1;
+        return Emps.Max(emp => emp.Salary);
     }
 
     /// <summary>
@@ -44,7 +44,8 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<Emp> Task4()
     {
-        return null;
+        // int maxSalary = Emps.Max(emp => emp.Salary);
+        return Emps.Where(emp => emp.Salary == Emps.Max(emp => emp.Salary));
     }
 
     /// <summary>
@@ -52,7 +53,12 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<object> Task5()
     {
-        return null;
+        return Emps.Select(emp => new
+        {
+            Nazwisko=emp.Ename,
+            Praca=emp.Job
+        });
+        
     }
 
     /// <summary>
@@ -62,7 +68,8 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<object> Task6()
     {
-        return null;
+        return Emps.Join(Depts, emp => emp.Deptno, dept => dept.Deptno,
+            (emp, dept) => new { emp.Ename, emp.Job, dept.Dname });
     }
 
     /// <summary>
@@ -70,7 +77,11 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<object> Task7()
     {
-        return null;
+        return Emps.GroupBy(emp=>emp.Job).Select(grouping => new
+        {
+            Praca = grouping.Key,
+            LiczbaPracownikow = grouping.Count()
+        });
     }
 
     /// <summary>
@@ -79,7 +90,7 @@ public static partial class Tasks
     /// </summary>
     public static bool Task8()
     { 
-        return false;
+        return Emps.Where(emp=>emp.Job == "Backend programmer").Count() > 0;
     }
 
     /// <summary>
@@ -88,7 +99,7 @@ public static partial class Tasks
     /// </summary>
     public static Emp Task9()
     {
-        return null;
+        return Emps.Where(emp=>emp.Job == "Frontend programmer"). OrderByDescending(emp=>emp.HireDate).FirstOrDefault();
     }
 
     /// <summary>
@@ -98,7 +109,12 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<object> Task10()
     {
-        return null;
+        return Emps.Select(emp=> new
+        {
+            emp.Ename,
+            emp.Job,
+            emp.HireDate
+        }).Union(new[]{new{Ename = "Brak wartości",Job = (string)null, HireDate = (DateTime?)null}});
     }
 
     /// <summary>
@@ -114,7 +130,10 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<object> Task11()
     {
-        return null;
+        return Emps.Join(Depts, emp => emp.Deptno, dept => dept.Deptno,
+            (emp, dept) => new { emp.Ename, emp.Job, dept.Dname })
+            .GroupBy(dept=>dept.Dname)
+            .Where(grouping=>grouping.Count()>1).Select(grouping=>new{name = grouping.Key, numOfEmployees = grouping.Count()});
     }
 
     /// <summary>
@@ -139,7 +158,8 @@ public static partial class Tasks
     /// </summary>
     public static int Task13(int[] arr)
     {
-        return -1;
+        return arr.GroupBy(x=>x).Where(xIwystapienia=>xIwystapienia.Count() % 2 != 0).
+            Select(xIWystapienia => xIWystapienia.Key).FirstOrDefault();
     }
 
     /// <summary>
@@ -148,6 +168,10 @@ public static partial class Tasks
     /// </summary>
     public static IEnumerable<Dept> Task14()
     {
-        return null;
+        return Depts.GroupJoin(Emps, emp => emp.Deptno, dept => dept.Deptno,
+                (dept, emp) => new { Departament = dept, EmployeeCount = emp.Count() })
+
+            .Where(deptEmpCount => deptEmpCount.EmployeeCount == 5 || deptEmpCount.EmployeeCount == 0)
+            .Select(deptEmpCount => deptEmpCount.Departament).OrderBy(dept => dept.Dname);
     }
 }
